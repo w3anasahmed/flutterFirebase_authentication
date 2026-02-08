@@ -1,55 +1,50 @@
 import 'package:authentication/components/button.dart';
 import 'package:authentication/components/square_tile.dart';
 import 'package:authentication/components/textfield.dart';
-import 'package:authentication/screens/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
-class LoginPage extends StatefulWidget {
-  void Function()? onTapFunction;
-  LoginPage({super.key, required this.onTapFunction});
+class RegisterPage extends StatefulWidget {
+  void Function()? onTap;
+  RegisterPage({super.key, required this.onTap});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  //controllers
+class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
 
   TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
   //void sign
-  void userSignIn() async {
+  void userSignUp() async {
     showDialog(
       context: context,
       builder: (context) => Center(child: CircularProgressIndicator()),
     );
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
+      if (passwordController.text == confirmPasswordController.text) {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialog(title: Text('pass and confirm pass are not same')),
+        );
+      }
 
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
-      if (e.code == 'invalid-email') {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(title: Text('Wrong email')),
-        );
-      } else if (e.code == 'invalid-credential') {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(title: Text('Wrong password')),
-        );
-      } else {
-        print(e.code);
-      }
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(title: Text(e.code.toString())),
+      );
     }
 
     //to stop the circular progress bar
@@ -66,14 +61,14 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 70),
+              SizedBox(height: 50),
               //logo
               Icon(Icons.lock, size: 95),
-              SizedBox(height: 50),
+              SizedBox(height: 40),
 
               //welcome back , you've been missed!
               Text(
-                'Welcome back you\'ve been missed!',
+                'lets create an account!',
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
               ),
               SizedBox(height: 25),
@@ -90,26 +85,21 @@ class _LoginPageState extends State<LoginPage> {
                 hintText: 'Password',
                 obscureText: true,
               ),
-              SizedBox(height: 10),
-              //forgot password?
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 25.0),
-                    child: Text(
-                      'forgot password?',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ),
-                ],
+
+              SizedBox(height: 20),
+
+              CustomTextField(
+                controller: confirmPasswordController,
+                hintText: 'Confirm Password',
+                obscureText: true,
               ),
+
+              SizedBox(height: 10),
+
+              //forgot password?
               SizedBox(height: 25),
               //sign in button
-              CustomButton(onPressed: () => userSignIn(), text: 'Sign In'),
+              CustomButton(onPressed: () => userSignUp(), text: 'Register Now'),
               SizedBox(height: 50),
               //or continue with
               Padding(
@@ -154,14 +144,14 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Not a member',
+                    'Already have an account?',
                     style: TextStyle(color: Colors.grey.shade700, fontSize: 18),
                   ),
                   SizedBox(width: 8),
                   GestureDetector(
-                    onTap: widget.onTapFunction,
+                    onTap: widget.onTap,
                     child: Text(
-                      'Register now',
+                      'Login now',
                       style: TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.bold,

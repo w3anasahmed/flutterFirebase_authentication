@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   void Function()? onPressed;
-  CustomButton({super.key, required this.onPressed});
+  String text;
+  CustomButton({super.key, required this.onPressed, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class CustomButton extends StatelessWidget {
           minimumSize: Size(double.infinity, 70),
         ),
         child: Text(
-          'Sign In',
+          text,
           style: TextStyle(
             fontSize: 20,
             color: Colors.white,
