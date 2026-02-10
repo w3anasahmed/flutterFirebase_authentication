@@ -1,6 +1,7 @@
 import 'package:authentication/components/button.dart';
 import 'package:authentication/components/square_tile.dart';
 import 'package:authentication/components/textfield.dart';
+import 'package:authentication/services/auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -31,15 +32,15 @@ class _RegisterPageState extends State<RegisterPage> {
           email: emailController.text,
           password: passwordController.text,
         );
+        Navigator.pop(context);
       } else {
+        Navigator.pop(context);
         showDialog(
           context: context,
           builder: (context) =>
               AlertDialog(title: Text('pass and confirm pass are not same')),
         );
       }
-
-      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       showDialog(
         context: context,
@@ -133,9 +134,12 @@ class _RegisterPageState extends State<RegisterPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SquareTile(imagePath: "images/google.png"),
+                  SquareTile(
+                    imagePath: "images/google.png",
+                    onTap: () => AuthServices().signInWithGoogle(),
+                  ),
                   SizedBox(width: 25),
-                  SquareTile(imagePath: 'images/apple.png'),
+                  SquareTile(imagePath: 'images/apple.png', onTap: () {}),
                 ],
               ),
               SizedBox(height: 50),
